@@ -1,34 +1,47 @@
 import React, { ReactNode } from 'react';
+
 interface State {
   hasError: boolean;
+  errorMessage: string;
 }
 
 interface ErrorBoundaryProps {
   children: ReactNode;
 }
 
-
-class ErrorBoundary extends React.Component<ErrorBoundaryProps , State> {
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { 
+      hasError: false,
+      errorMessage: ''
+    };
   }
 
   static getDerivedStateFromError(error: Error): State {
-    return { hasError: true };
+    return { 
+      hasError: true,
+      errorMessage: error.message 
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.log({ error, errorInfo });
+    // Log error to console for development
+    console.error('Error caught by boundary:', error);
+    console.error('Error info:', errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div>
-          <h2>Oops, there is an error!</h2>
-          <button onClick={() => this.setState({ hasError: false })}>
-            Try again?
+        <div className="error-boundary">
+          <h2>Something went wrong!</h2>
+          <p>{this.state.errorMessage}</p>
+          <button 
+            onClick={() => this.setState({ hasError: false, errorMessage: '' })}
+            className="retry-button"
+          >
+            Try again
           </button>
         </div>
       );
